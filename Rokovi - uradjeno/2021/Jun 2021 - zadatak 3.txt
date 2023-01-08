@@ -1,0 +1,61 @@
+int N=..;
+mbx boxData[N];
+mbx boxAck[N];
+
+void Node(id: 0){
+    int mynumber=...;
+    
+    int min=mynumber;
+    int max=mynumber;
+   
+    msg m,ack;
+    boolean status;
+    
+    m.number=mynumber;
+    m.min=min;
+    m.max=max;
+    mbx_put(m,boxData[(id+1)%N]);
+    mbx_get(ack,boxAck[id],INF,status);
+    
+    //drugi krug u poruci su sigurno min i max 
+    mbx_get(m,boxData[id],INF,status);
+    min=m.min;
+    max=m.max;
+    mbx_put(ack,boxAck[(id-1)%N]);
+      
+    mbx_put(m,boxData[(id+1)%N]);
+    mbx_get(ack,boxAck[id],INF,status);
+}
+
+
+
+void Node( id: 1..N-1){
+     int mynumber=...;
+     int min=mynumber;
+     int max=mynumber;
+   
+    msg m,ack;
+    boolean status;
+     
+     
+      mbx_get(m,boxData[id],INF,status);
+      if(m.min>min)  m.min=min;
+      if(m.max<max)  m.max=max;
+     
+      mbx_put(ack,boxAck[(id-1)%N]);
+      
+      mbx_put(m,boxData[(id+1)%N]);
+      mbx_get(ack,boxAck[id],INF,status);
+      
+       //drugi krug u poruci su sigurno min i max 
+        mbx_get(m,boxData[id],INF,status);
+        min=m.min;
+        max=m.max;
+        mbx_put(ack,boxAck[(id-1)%N]);
+      
+        mbx_put(m,boxData[(id+1)%N]);
+        mbx_get(ack,boxAck[id],INF,status);
+      
+    
+    
+}

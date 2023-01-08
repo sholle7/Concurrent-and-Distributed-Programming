@@ -1,0 +1,31 @@
+struct Resource{
+    int nr, nw, next, turn;   
+};
+
+Resource res;
+
+void reader(){
+    region(res){ 
+        int my_turn = next++;
+        await(my_turn == turn && nw == 0);
+        nr++;
+        turn++;
+    }
+    read();
+    region(res){
+        nr--;
+    }
+}
+
+void writer(){
+    region(res){
+        int my_turn = next++;
+        await(my_turn == turn && nr == 0 && nw == 0);
+        nw++;
+        turn++;
+    }
+    write();
+    region(res){
+        nw--;
+    }
+}

@@ -1,0 +1,30 @@
+struct A{
+	int k=0;
+	int come=0;
+	bool bus=false;
+	int cnt=0;
+};
+
+A a;
+
+void bus(){
+	region(a){
+		a.bus=true;
+		await(a.k==K || a.cnt==a.come)
+		a.cnt=a.come=0;
+		a.bus = false
+	}
+}
+
+void person(){
+	region(a){
+		await(bus==false);
+		a.come++;
+		await(a.bus==true && a.k<K);
+		k++; cnt++;
+	}
+	drive();
+	region(a){
+		k--;
+	}
+}

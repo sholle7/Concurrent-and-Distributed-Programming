@@ -1,0 +1,11 @@
+const int N = ...
+sem waiting[N] = {1,...,0}
+void process(int id){
+    while(1){
+	work();
+        wait(waiting[id]);
+        signal(waiting[(id+1) % N]);
+        wait(waiting[id]);
+        signal(waiting[(id+1) % N]);   
+    }
+}

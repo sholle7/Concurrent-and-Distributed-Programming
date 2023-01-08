@@ -1,0 +1,87 @@
+struct msg
+{
+	int id;
+	string operation;
+	double weight;
+	int side; //0 - south, 1 - north
+}
+
+const double K = ...;
+mbx bridge;
+mbx[N] north;
+mbx[M] south;
+
+void bridge {
+	int weight;
+	int numberSouthCrossing;
+	int numberNorthCrossing;
+	boolean s;
+	queue<msg> queue;
+	msg m;
+	if(!queue.empty && ((queue.peek().side == 1 && numberSouthCrossing == 0 && queue.peek().weight + weight < K)||(queue.peek().side == 0 && numberNorthCrossing == 0 && queue.peek().weight + weight < K))){
+		m = queue.get();
+	}
+
+	else{
+		mbx_get(m,bridge, INF, s);
+	}
+
+	operation = m.operation;
+	switch(operation){
+		case "startCrossingSouth":
+			if(m.weight + weight > K || !queue.empty() || numberNorthCrossing > 0) {
+				m.operation = "startCrossingSouthContinue";
+				queue.add(m);
+			}
+		case "startCrossingSouthContinue":
+			numberSouthCrossing++;
+			mbx_put(m, south[m.id]);
+			break;
+		case "endCrossingSouth":
+			numberSouthCrossing--;
+			weight -= m.weight;
+			break;
+		// same for north side...
+	}
+}
+
+ void southCar(int id, double w){
+ 	msg m;
+ 	m.id = id;
+ 	m.weight = w;
+ 	m.operation = "startCrossingSouth";
+ 	m.side = 0;
+ 	while(true){
+	 	mbx_put(m,bridge);
+	 	mbx_get(m,south[id],INF,s);
+
+	 	//cross
+
+	 	m.operation = "endCrossingSouth";
+
+	 	mbx_put(m,bridge);
+	 	mbx_get(m,south[id],INF,s);
+	 }
+}
+
+
+ void northCar(int id, double w){
+ 	boolean s;
+ 	msg m;
+ 	m.id = id;
+ 	m.weight = w;
+ 	m.operation = "startCrossingNorth";
+ 	m.side = 1;
+ 	while(true){
+
+	 	mbx_put(m,bridge);
+	 	mbx_get(m,north[id], INF, s);
+	 
+	 	//cross
+	 	
+	 	m.operation = "endCrossingNorth";
+
+	 	mbx_put(m,bridge);
+	 	mbx_get(m,north[id],INF,s);
+ 	}
+ }

@@ -1,0 +1,59 @@
+void init(){
+	const int C=3;
+	sem toLeave=0;
+	sem enter=1;
+	sem mutex=1;
+	int numChild=0, numNanny=0;
+	int waitingChild=0, waitingNanny=0;
+}
+
+void bringUpChild(int num){
+	wait(enter);
+	wait(mutex);
+	if(numChild+num > numNanny*3){
+		waitingChild+=num;
+		signal(mutex);
+		wait(toLeave);
+		waitingChild=0;
+	}
+	numChild+=num;
+	signal(mutex);
+	signal(enter);
+}
+
+
+void bringBackChild(int num){
+	wait(mutex);
+	numChild-=num;
+	if((waitingChild>0) && (numNanny*C>= numChild+waitingChild))
+		signal(toLeave);
+	else if((numNanny>0) && (numChild <= C*(numNanny-1)))
+		signal(toLeave);
+	else
+		signal(mutex);
+}
+
+void enterNanny(){
+	wait(mutex);
+	numNanny++;
+	if((waitingChild>0) && (numNanny*C>= numChild+waitingChild))
+		signal(toLeave);
+	else if((numNanny>0) && (numChild <= C*(numNanny-1)))
+		signal(toLeave);
+	else
+		signal(mutex);
+}
+
+void exitNanny(){
+	wait(enter);
+	wait(mutex);
+	if((numNanny-1)*C < numChild){
+		waitingNanny++;
+		signal(mutex);
+		wait(toLeave);
+		waitingNanny--;
+	}
+	numNanny--;
+	signal(mutex);
+	signal(enter);
+}

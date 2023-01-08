@@ -1,0 +1,73 @@
+//semafor uz pomoc SW monitora
+monitor semafor{
+    
+ int zetoni=0;   
+
+ cond red; // po postavci je fifo
+ 
+ cond prvi
+    
+    
+ void wait(){
+     
+     if(zetoni<=0){
+         
+         if(prvi.queue()) red.wait();
+         while(zetoni<=0){
+            prvi.wait(); 
+         } 
+        if(red.queue()) red.signal();
+     }
+     
+     
+     zetoni--;
+     
+ }   
+ 
+ 
+ void Signal(){
+     zetoni++;
+     if(prvi.queue()){
+         prvi.signal();
+         
+     }
+     
+ }
+    
+    
+ void wait(int n){
+     if(zetoni<=n){
+         
+         if(prvi.queue()) red.wait();
+         while(zetoni<n) {
+             prvi.wait();
+         }
+        if(red.queue()) red.signal();
+     }
+     
+     
+     zetoni-=n;
+     
+ }   
+ 
+ void Signal(int n){
+     zetoni+=n;
+     if(prvi.queue()){
+         prvi.signal();
+     }
+ }
+    
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+

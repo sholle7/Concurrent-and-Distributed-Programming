@@ -1,0 +1,75 @@
+void barber(){
+    int turn;
+    
+     in("turn",?turn);
+    
+    while(1){
+        
+       
+        in("barber", turn);
+        
+		out("sit", turn);
+		// waiting customer to sit
+		in("sit_ack", turn);
+		// haircutting
+		out("pay", turn);
+		// waiting for money
+		in("paid", turn);
+		
+		//out("barber",turn);
+
+    }
+    
+}
+
+void customer(){
+    int myTicket;
+    int waiting;
+    
+    in("ticket",?myTicket);
+    in("waiting",?waiting);
+    if(waiting>=20){
+        out("waiting",waiting);
+        out("ticket",myTicket);
+        //go home 
+    }
+    else{
+        out("waiting",waiting+1);
+        out("ticket",myTicket+1);
+        
+        //cekam
+        
+        in("nextHaircut",myTicket);
+        out("nextHaircut",myTicket+1);
+        
+        in("waiting",?waiting);
+        out("waiting",waiting-1);
+         
+        int mybarber;
+	    in("barber_next", ?mybarber);
+	    out("barber_next", mybarber+1);
+	    mybarber=mybarber%3;
+	    
+	    out("barber", mybarber);
+	    in("sit", mybarber);
+	    out("sit_ack", mybarber);
+	    // getting haircut
+	    in("pay", mybarber);
+	    out("paid", mybarber);
+
+	    // go home
+
+    }
+    
+    
+    
+}
+
+void init(){
+    out("ticket", 0);
+	out("waiting", 0);
+
+	out("nextHaircut",0);
+	out("barber_next",0);
+
+}

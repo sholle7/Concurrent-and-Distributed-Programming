@@ -1,0 +1,11 @@
+Node tail = new Node(false);
+
+void process() {
+	Node node = new Node(true);
+	Node prev = node;
+	SWAP(prev, tail);
+	while (prev.locked) skip;
+	// critical section
+	node.locked = false;
+	// noncritical section
+}

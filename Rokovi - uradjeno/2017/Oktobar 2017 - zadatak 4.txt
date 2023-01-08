@@ -1,0 +1,42 @@
+void organisator() {
+	int sn,on;
+	rd("specNum", ?sn);
+	rd("ordNum", ?on);
+	for(int i=0;i<sn+on;i++)out("meeting");
+	infoO =...,infoS=...;
+
+	for(int j=0;j<sn;j++){
+		out("additionalInfoS",infoS);
+		in("ackS");
+	}
+	for(int k=0;k<on;k++){	
+		out("additionalInfoO",infoO);
+		in("ackO");
+	}
+	//resolve objection
+	for(int i=0;i<sn+on;i++)out("start");
+}
+
+void specialParticipant(int i){
+	in("meeting");
+	in("additionalInfoS");
+	in("additionalInfoO", ?info);
+	//add objection
+	out("ackS");
+}
+
+void ordinaryParticipant(int i){
+	in("meeting");
+	in("additionalInfoO", ?info);
+	//add objection
+	out("ackO");
+	in("start");
+}
+
+void init(){
+	int N=..., M=...;
+	out("specNum", N);
+	out("ordNum,", M);
+	for(int i=0;i<N;i++)eval(specialParticipant(i));
+	for(int j=0;i<M;i++)eval(ordinaryParticipant(j));
+}

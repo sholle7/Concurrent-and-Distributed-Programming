@@ -1,0 +1,13 @@
+monitor Visa {
+    cond c;
+    int clock;
+
+    void tick(){
+        clock += 10;
+        if(c.queue() && c.minRank() >= clock) c.signal();
+    }
+
+    void start(int time_start){
+        if(clock < time_start) c.wait(time_start);
+    }
+}

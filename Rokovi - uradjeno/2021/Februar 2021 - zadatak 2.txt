@@ -1,0 +1,153 @@
+void cross_the_street();
+int systemtime();
+
+sem mutex=1;
+sem mutexP=0;
+sem mutexC=1;
+sem color=1;
+
+int waitingP=0;
+int waitingC=0;
+int carsPassed=0;
+
+
+sem cars=0;
+sem pedestrians=0;
+
+sem wakeupSemaphore=0;
+bool semworking=false;
+
+
+string greenLight="Car";
+
+int startTime=0;
+int endtime=0;
+
+
+
+void semaphore(){ // postoji 1 semafor
+    
+    while(1){
+        
+        wait(wakeupSemaphore);
+        while(1){
+            
+            if(greenLight=="Pedestrian" && endTime()-systemtime()>G){
+                wait(mutex);
+                wait(mutexC);
+                
+                greenLight="Cars";
+                
+                if(waitingC) {
+                    signal(cars);
+                }
+                else {
+                    signal(mutexC);
+                    signal(mutex);
+                }
+                break;
+                
+            }
+            else if((greenLight=="Car" && (systemtime()-startTime >=K || carsPassed>=C) ){
+                    wait(mutex);
+                    wait(mutexP);
+                    
+                    carsPassed=0;
+                    greenLight=="Pedestrian";
+		    endtime=systemtime();
+                    if(waitingP){
+                        signal(pedestrians);
+                    }
+                    else{
+                        signal(mutexP);
+                        signal(mutex);
+                    }
+                   
+           }
+        }     
+    }   
+}
+
+void Pedestrian(){
+    wait(mutex);
+    
+    wait(mutexP);
+    if(greenLight!="Pedestrian"){ //crveno za pesake
+           
+        waitingP++;
+        
+        if(waitingP==1){
+            if(semworking==false && greenLight=="Car"){
+                semworking=true;
+                startTime=systemtime();
+                signal(wakeupSemaphore);
+            }
+            
+        }
+        
+        signal(mutexP);
+        signal(mutex);
+        
+        while(greenLight=="Car"){
+        wait(pedestrians); // cekaj
+        }
+        
+        waitingP-;
+    }
+   
+    if(waitingP>0){
+        signal(pedestrians);
+    }
+    else{
+        signal(mutexP);
+        signal(mutex);
+    }            
+}
+
+void Car(){
+    wait(mutex);
+  
+    wait(mutexC);
+    if(greenLight!="Car"){ //crveno za auto
+           
+        waitingC++;
+        signal(mutexC);
+        signal(mutex);
+        
+        while(greenLight=="Pedestrians"){
+        wait(cars); // cekaj
+        }
+        
+        waitingC--;
+        
+    }
+    
+     // zeleno za auto  
+    if(waitingP>0) carsPassed++;
+     
+    if(carsPassed==C){ // ako je proslo C auta pokreni semafor ako nije pokrenut mutexC i mutex su 0  svi auti cekaju 
+         if(semworking==false){
+         semworking=true;
+         signal(wakeupSemaphore);
+         }
+    }
+     
+    else{
+        if(waitingC>0){
+            signal(cars);
+        }
+        else{
+            signal(mutexC);
+            signal(mutex);
+        }   
+    
+         
+    }
+      
+   
+    
+    
+    
+    
+    
+}

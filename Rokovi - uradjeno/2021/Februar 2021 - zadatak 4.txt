@@ -1,0 +1,117 @@
+[(i:1..nc)Car(i)::CAR || Garage::GARAGE]
+
+
+CAR::
+[
+   myticket,next:integer;
+   ok:boolean;
+   
+   Garage!canEnter();
+   Garage?answer(ok);
+    [
+        ok==true ->
+            [
+                Garage!getTicket();
+                Garage?giveTicket(myticket,next);
+                
+                    *[
+                        myticket!=next -> 
+                            [
+                                Garage!getNext();
+                                Garage?giveNext(next);
+                            ]
+        
+                    ]
+                    
+                entering...   
+                Garage!updateEnter();
+                
+                ...
+                
+                
+                //uvek moze da izadje 
+                Garage!canExit();
+                
+                Garage!getTicket();
+                Garage?giveTicket(myticket,next);
+                
+                    *[
+                        myticket!=next -> 
+                            [
+                                Garage!getNext();
+                                Garage?giveNext(next);
+                            ]
+        
+                    ]
+                    
+                    exiting...
+                    Garage!updateExit();
+                    
+                    
+            ]
+    ]
+   
+  
+    
+]
+
+
+GARAGE::
+[
+   ticket,next:integer;
+   ticket=0; 
+   next=0;
+   
+   freeSpaces:integer;
+   freeSpaces=N;
+   
+   nu,ni:integer;
+   nu=0;
+   ni=0;
+   
+   *[
+        true->
+            [
+                (i:1..nc)Car(i)?getTicket()->
+                    [
+                        Car(i)!giveTicket(ticket,next);
+                        ticket=ticket+1;
+                    ]
+                
+                []
+                
+                (i:1..nc)Car(i)?getNext()->Car(i)!giveNext(next);
+                    
+                []
+                
+                (i:1..nc)Car(i)?canEnter()->
+                    [
+                        (freeSpaces+ni-nu) > 0 ->
+                            [
+                                nu++;
+                                Car(i)!answer(true);
+                            ]
+                        
+                        []    
+                        
+                        (freeSpaces+ni-nu) <= 0 -> Car(i)!answer(false);
+                           
+                    ]
+                
+                []
+                
+                (i:1..nc)Car(i)?updateEnter()-> nu--; next++;
+                
+                []
+                
+                (i:1..nc)Car(i)?canExit()->ni++;
+                
+                []
+                
+                (i:1..nc)Car(i)?updateExit()-> ni--; next++;
+                
+                
+            ]   
+    ]
+   
+]

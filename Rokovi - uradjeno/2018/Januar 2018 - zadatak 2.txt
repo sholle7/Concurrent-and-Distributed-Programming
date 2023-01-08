@@ -1,0 +1,47 @@
+struct Sala{
+    bool vrhSudija = false;
+	int brSudija = 0;
+	int brUsli = 0;
+};
+Sala sala;
+
+void sudija(){
+    region(sala){
+        await(!vrhSudija);
+        brSudija++;
+    }
+    //ceka da udje sudija
+	region(sala){ 
+		brUsli++;
+	}
+	//polaze zakletvu
+	region(s){
+	    await(!brUsli);
+		brSudija--;
+	}
+    
+}
+
+void posmatrac(){
+    region(sala){
+		await(!vrhSudija);
+	}
+	//ulazi	
+	udji();
+	//... gleda polaganje zakletve
+	izadji();
+    
+}
+
+void vrhovni_sudija(){
+   region(sala){
+			vrhSudija=true;
+			await(brUsli==brSudija); // cekaj da svi udju
+			brUsli=0;
+	}
+	//slusa i dodeljuje diplome
+	region(sala){
+		await(brSudija==0); //da svi budu saslusani
+		vrhSudija=false;
+	}
+}

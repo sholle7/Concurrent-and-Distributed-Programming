@@ -1,0 +1,36 @@
+1) Монитор треба да обезбеди скупљање гајбица са ивице воћњака. Процеси берачи доносе по
+неколико пуних гајбица (зависно од носивости берача) до пута на ивици њиве. Када поред пута берачи
+оставе бар prikolica_kapacitet гајбица, треба да се пробуди један од процеса traktor_sa_prikolicom, да дођу
+до пута крај њиве и покупе онолико гајбица колико стаје у приколицу (prikolica_kapacitet). Процеси
+traktor_sa_prikolicom позивају мониторску процедуру spreman_da_pokupim када заврше превоз
+претходне приколице воћа. Берачи позивају мониторску процедуру ostavljam_gajbice, када донесу
+гајбице до ивице пута. Подразумевати Signal and Wait дисциплину.
+----------------------------------------------------------------------------------------------------------------
+
+monitor {
+    const prikolica_kapacitet = ...
+    cond dovoljno;
+    int kolicina = 0;
+    
+    void spremam_da_pokupim(){
+        if(kolicina < prikolica_kapacitet)dovoljno.wait();
+        kolicina -= prikolica_kapacitet;
+    }
+        
+    void ostavljam_gajbice(int i){
+        kolicina += i;
+        if(kolicina >= prikolica_kapacitet)dovoljno.signal();
+    }
+}
+process traktor_sa_prikolicom{
+    while(true){
+        prevozim();
+        spremam_da_pokupim();
+    }
+}
+process beraci[0..N]{
+    while(true){
+        skupljam();
+        ostavljam_gajbice(i);
+    }
+}

@@ -1,0 +1,53 @@
+//Zadatak 1 
+//Timer privatni semafori
+
+int now=0;
+
+sem semafori[N] = {0,0 .. 0}; //N-broj procesa 
+
+sem mutex=1;
+
+struct Info{
+    int id;
+    int alarmtime;
+    Info(int i, int t){
+        id=i;
+        alarmtime=t;
+    }
+};
+
+prQueue red[Info]; // prioritetni red u odnosu na vreme budjenja
+
+void wakeme(int n, int id){
+    
+    wait(mutex);
+    int wakeUpTime=now+n; // vreme budjenja
+    
+    Info i=new Info(id,wakeUpTime);
+    red.add(i); // ubaci u prioritetni red 
+    signal(mutex);
+    
+    wait(semafori[id]); 
+    
+     if(!red.empty() && red.first().alarmtime==now){ // kad si probudjen vidi je lima jos neko 
+	int i = red.first().id;
+	red.delete();
+        signal(semafori[i]);  // ako da budi ga 
+        
+    }
+    else signal(mutex); // ako ne pusti mutex, mutex se drzi sve vreme dok se ne probudi poslenji proces sa istim vremenom budjenja
+    
+}
+
+void tick(int id){
+    wait(mutex);
+    now++;
+    
+    if(!red.empty() && red.first().alarmtime==now){ //proveri da li budis nekog sad
+	int i = red.first().id;
+	red.delete();
+        signal(semafori[i]); 
+
+    }
+     else signal(mutex);
+}

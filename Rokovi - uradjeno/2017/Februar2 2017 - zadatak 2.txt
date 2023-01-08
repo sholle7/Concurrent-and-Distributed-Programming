@@ -1,0 +1,82 @@
+//SW
+monitor Berbernica{
+
+	cond stolice[3]; //0-Aca, 1-Braca, 2-Zajednicki
+	cond stajanje[3]; 
+	int cntStolice=0, cntStajanje=0;
+	int cnt=0;
+	cond berberin[2];
+	cond sisanje[2];
+	cond pay[2];
+	Queue queue;
+
+	bool dolazi_musterija(int a){ //a -kod koga dolazi
+		if(cntStolice==10 && cntStajanje==5)
+			return false;
+		
+		if(a==2 && (berberin[0].queue() || berberin[1].queue())){
+			if(berberin[0].queue()){
+				berberin[0].signal();
+				sisanje[0].wait();
+				pay[0].signal();
+			}
+			else{
+				berberin[1].signal();
+				sisanje[1].wait();
+				pay[1].signal();
+			}
+			return true;
+		}else if(berberin[a].queue()){
+			berberin[a].signal();
+			sisanje[a].wait();
+			pay[a].signal();
+			return true;
+		}
+
+		int myCnt=cnt++;
+		if(cntStolice<10){
+			stolice[a].wait(myCnt);
+			//findMinRank stajanja
+			int min=MAX_INT;
+			int zaBerberina=-1;
+			for(int i=0;i<3;i++){
+				if(stajanje[i].Queue() && stajanje[i].MinRank()<min){
+					min=stajanje[i].MinRank();
+					zaBerberina=i;
+				}
+			}
+			if(zaBerberina!=-1)
+				stajanje[zaBerberina].signal();
+		}
+		else{
+			stajanje[a].wait(myCnt);
+			stolice[a].wait(myCnt);
+		}
+		int id=queue.get();
+		sisanje[id].wait();
+		pay[id].signal();
+		return true;
+	}
+
+	void naplati(int id){
+		sisanje[id].signal();
+		pay[id].wait();
+	}
+
+	void sled_musterija(int id){
+		if(stolice[id].empty() && stolice[2].empty())
+			berberin[id].wait();
+		else{
+			if(stolice[id].queue()){
+				queue.put(id);
+				stolice[id].signal();
+			}
+			else {
+				queue.put(id);
+				stolice[2].signal();
+			}
+		}
+	}
+
+
+}

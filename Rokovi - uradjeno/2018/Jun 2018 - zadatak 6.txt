@@ -1,0 +1,57 @@
+int N = ... ; 
+msgBox bagBox;
+msgBox[] workerBox;
+msgBox collectorBox;
+
+struct msg{
+	int id;
+	string opr;
+	int position;
+	float speed;
+	float forceVector;
+	float result;
+};
+
+void Worker(int id){
+	boolean boo = true, status;
+	msg m;
+	while(boo){
+		m.id=id;
+		m.opr="readyForWork";
+		mbx_put(m,BagBox);
+		mbx_get(m,workerBox[id], INF,status);
+		if(m.opr==-1){
+			break;
+		}
+		float res = calculate(m.speed, m.position, m.forceVector);
+		m.result = res;
+		mbx_put(m, collectorBox);
+	}
+}
+
+
+void Bag(){
+	boolean status;
+	for(int i=0; i< N;i++){ 
+		Msg m;
+		mbx_get(m, BagBox, INF, status);
+		id=m.id;
+		m.position=...;
+		m.forceVector=...;
+		m.speed= ...;
+		mbx_put(m,workerBox[i]);
+	}
+
+	for(int i=0; i<NumOfWorkers){
+		m.opr=-1;
+		mbx_put(m,workerBox[i]);
+	}
+}
+
+
+void Collector(){
+	for(int i=0; i<N; i++){
+		mbx_get(m, collectorBox, INF, status);
+		//collect
+	}
+}

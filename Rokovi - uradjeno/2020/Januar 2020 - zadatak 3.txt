@@ -1,0 +1,67 @@
+enum operation {wait, signal, waitN, signalN};
+
+chan request(int, op, arg);
+chan reply[N](dummy);
+
+
+void Semaphore(){
+    
+    int cliendID;
+    operation op;
+    int arg;
+    
+    queue<int,int> waiting;
+    
+    int s=0;
+    
+    while(1){
+        
+        cliendID,op,arg=request.receive();
+        
+        if(op==wait){ op=waitN; arg=1; }
+        if(op==signal){ op=signalN; arg=1; }
+        
+        
+        switch(op){
+            
+           
+            case waitN:
+            
+            if(arg>s){
+                waiting.add(cliendID,arg);
+            }
+            else{
+                s-=arg;
+                reply[clientId].send(dummy);
+            }
+            
+            break;
+            
+            
+            case signalN:
+                s+=arg
+                reply[clientId].send(dummy); 
+                
+                if(!waiting.empty()){
+                    cliendID,arg=waiting.peek();
+                    if(s>=arg){
+                         cliendID,arg=waiting.remove(0);
+                         s-=arg;
+                         reply[clientId].send(dummy); 
+                         
+                    }
+                }
+                
+            
+            break;
+            
+            
+        }
+        
+        
+        
+        
+    }
+    
+}
+

@@ -1,0 +1,39 @@
+monitor BumperCarProblem {
+
+	int carTurn = 0;
+	int customerTurn = 0;
+
+	condition customer, car;
+
+	void car_get_customer() {
+		if (customer.queue()) {
+			customer.signal();
+		} else {
+			int myTurn = carTurn++;
+			car.wait(myTurn);
+		}
+	}
+	void get_car() {
+		if (car.queue()) {
+			car.signal();
+		} else {
+			int myTurn = customerTurn++;
+			customer.wait(myTurn);
+		}
+	}
+}
+
+process Car() {
+	while (true) {
+		car_get_customer();
+		car_free();
+	}
+}
+
+process Child() {
+	while (true) {
+		int car = get_car();
+		ride();
+		put_car(car);
+	}
+}

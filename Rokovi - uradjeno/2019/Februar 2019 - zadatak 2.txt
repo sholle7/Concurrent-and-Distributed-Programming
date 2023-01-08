@@ -1,0 +1,24 @@
+sem mutex = 1, first = 0, second = 0;
+int temp, turn;
+
+void swap(int value){
+    int new_value;
+    wait(mutex);
+    turn++;
+    if(turn == 1){
+         signal(mutex);
+         wait(first);
+         new_value = temp;
+         temp = value;
+         signal(second);
+    }
+    else {
+        turn = 0;
+        temp = value;
+        signal(first);
+        wait(second);
+        new_value = temp;
+        signal(mutex);
+    }
+    return new_value;
+}

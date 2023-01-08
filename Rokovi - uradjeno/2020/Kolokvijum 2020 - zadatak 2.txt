@@ -1,0 +1,41 @@
+//SC
+const int N = ...;
+monitor Garaza{
+    condition cekaj, ulazak;
+    int turn, next;
+    int zauzetaMesta;
+    int wi, wu;
+    
+    boolean trazim_ulaz(){
+        int myTurn = turn++;
+        wu++;
+        if(myTurn != next) cekaj.wait(myTurn);
+        if(zauzetaMesta - wi + wu -1 >= N){
+		wu--;
+		next++;
+		if(cekaj.queue())cekaj.signal();	 
+		return false;
+	}
+        while(zauzetaMesta >= N || wi > 0) ulazak.wait();
+      
+        next++;
+        if(cekaj.queue())cekaj.signal();
+        return true;
+    }   
+    
+    void usao(){
+        wu--;
+        zauzetaMesta ++;
+    }
+    
+    void trazim_izlaz(){
+        wi++;
+    }
+    
+    void izasao(){
+        wi--,
+        zauzetaMesta--;
+        if(wi == 0 && ulazak.queue()) ulazak.signal();
+    }
+    
+}

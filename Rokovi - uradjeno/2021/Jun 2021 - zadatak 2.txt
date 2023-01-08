@@ -1,0 +1,47 @@
+const int standard = 20, luxury = 10;
+struct Agention {
+    int ns, nl;
+    int next, turn;
+    Queue<int,int> q;
+}
+Agention agention;
+
+void rent_a_car(int id, int option){  //option(1 - standard, 2 - luxury, 3 - both)
+    region(agention) {
+        int myTurn = turn++;
+	await(myTurn == next);
+        if(option == 1) {
+            await(ns > 0);
+            ns--;
+            q.add(id,1);
+        }
+        
+        else if(option == 2) {
+            await(nl > 0);
+            nl--; 
+            q.add(id,2);
+        }
+        
+        else {
+            await(nl>0 || ns>0);
+            if(nl>0){
+                nl--;
+                 q.add(id,2);
+            }
+            else{
+                ns--;
+                q.add(id,1);
+            }
+        }
+        next++;
+    }
+}
+
+void bring_car_back(int id){
+    region(agention){
+        int p = q.contains(id).value();
+        if(p == 1) ns++;
+        else nl++;
+        q.contains(id).remove();
+    }
+}

@@ -1,0 +1,105 @@
+[(i:1..k)Worker(i)::WORKER || Bag::BAG || Collector::COLLECTOR]
+
+
+
+WORKER::
+[
+    myObject:Object;
+    result:Result;
+    
+    condition:boolean;
+    condition=true;
+    
+    *[
+       condition->
+            [
+                Bag!getTask();
+                Bag?giveTask(myobject)->
+                    [
+                         myobject!=null ->
+                            [
+                                Result=Calculate(myobject);
+                                Collector!giveResult(Result);
+                            ]
+                        
+                          []
+                          
+                          myobject==null->
+                                [
+                                    Collector!giveResult(null);
+                                    condition=false;
+                                ]
+                    ]
+                
+    
+    
+            ]
+   
+
+     ]
+]    
+
+BAG::
+[
+    TasksLeft:boolean;
+    cntTasksgiven:integer;
+    cntTasksgiven=0;
+  
+
+*[
+    TasksLeft->
+        [
+           cntTasksgiven<N -> 
+                [
+                    (i:1..k)Worker(i)?getTask()->
+                        [
+                            cntTasksgiven++;
+                            Object=nextObject(); // next object vraca sledeci po redu objekat
+                            Worker(i)!giveTask(Object);
+                            
+                            updateTasksLeft(); //updatuje broj taskova 
+                            
+                        ]
+                ]
+            
+            []
+            
+            cntTasksgiven==N ->
+                [
+                    Collector?reset()->cntTasksgiven=0;
+                ]
+        ]
+    
+    []
+    
+    !TasksLeft->
+            [
+                (i:1..k)Worker(i)?getTask()->Worker(i)?!giveTask(null); // ako nema vise salji mu null
+            ]
+
+ ]
+
+
+]
+
+COLLECTOR::
+[
+    cntTasksFinished:integer;
+    cntTasksgiven=0;
+    result:Result;
+    
+    *[
+        (i:1..k)Worker(i)?giveResult(Result)->
+            [
+                cntTasksFinished++;
+                cntTasksFinished==N -> 
+                    [
+                    Bag!reset();
+                    cntTasksFinished=0;
+                    ]
+            ]
+        
+     ]
+    
+
+]

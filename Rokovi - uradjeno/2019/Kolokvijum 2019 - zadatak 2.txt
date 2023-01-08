@@ -1,0 +1,28 @@
+monitor BankAccount {
+    cond c;
+    int balance;
+    queue<int> amounts;
+    
+    void deposit(int value){
+        balance += value;
+        while(balance - amounts.front() > 0){
+        	int am = amounts.pop();
+        	balance -= am;
+        	c.signal();
+	}
+    }
+    
+    int check(){
+    	return balance;        
+    }
+    
+    void withdraw(int value){
+        if(c.queue() || balance - amount < 0) {
+			amounts.push_back(amount);
+			int my_turn = turn++;
+			c.wait(my_turn);
+	}
+		else balance -= amount;
+
+    }
+}

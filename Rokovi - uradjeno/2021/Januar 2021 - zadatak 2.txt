@@ -1,0 +1,70 @@
+//zadatak 2
+//SW disciplina 
+
+monitor Bathroom {
+	const int N = 20;
+	int turn = 0, next = 0;
+	int man=0, woman=0, children=0;
+	condition waitForTurn, waitExit;
+
+	void enterMan() {
+		int my_turn = turn++;
+		if (my_turn > next || (woman > 0 || man+children == K)) 
+			waitForTurn.wait(4*my_turn + 0);
+		next++;
+		man++;
+		regulate();
+	}
+
+	void exitMan() {
+		if (man == 1 && children > 0)
+			waitExit.wait();
+
+		man--;
+		regulate();
+	}
+
+	// ... enterWoman, exitWoman
+
+	void enterChild() {
+		int my_turn = turn++;
+		if (my_turn > next || (man+woman+children == K))
+			waitForTurn.wait(4*my_turn + 2);
+		next++;
+		children++;
+		regulate();
+	}
+
+	void exitChild() {
+		children--;
+		if (children == 0) {
+			waitExit.signal();
+		}
+		regulate();
+	}
+
+	void enterJanitor() {
+		int my_turn = turn++;
+		if (my_turn > next || (man+woman+children>0))
+			waitForTurn.wait(4*my_turn + 3);
+	}
+
+	void exitJanitor() {
+		next++;
+		regulate();
+	}
+
+private:
+	void regulate() {
+		if (waitForTurn.queue()) {
+			int type = waitForTurn.minrank() % 4;
+			if (type == MAN && woman == 0 && (man+children)<K)
+				waitForTurn.signal();
+			// WOMAN
+			else if (type == CHILD && man+woman>0 && man+woman+children<K)
+				waitForTurn.signal();
+			else if (type == JANITOR && man + woman + children == 0)
+				waitForTurn.signal();  
+		}
+	}
+}

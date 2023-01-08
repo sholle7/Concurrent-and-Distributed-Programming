@@ -1,0 +1,34 @@
+[(i:1..N)P(i)::proccess|| M::monitor]
+process::
+*[
+	M!enter();
+	M?OK();
+	//crtical section
+	M!exit();
+]
+monitor::
+*[
+	int[N] ps;
+	int current = 0, next = 0;
+
+	(i:1..n)P(i)?enter()->[
+		current == next -> [
+			current++;
+			P(i)!OK();
+		]
+		[]
+		current!=next -> [
+			ps[current%N] = i;
+			current++;
+		]
+	]
+
+	[]
+
+	(i:1..n)P(i)?exit()-> [
+	 next++; 
+	 ps[next-1] = 0;
+	 ps[next] != 0 -> P(ps[next])!OK();
+	]
+
+]

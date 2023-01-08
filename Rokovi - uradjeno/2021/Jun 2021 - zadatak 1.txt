@@ -1,0 +1,20 @@
+//SC
+monitor printer{
+    int[2] printers = {1,1};
+    cond canPrint;
+    int request(int priority){
+        while((printers[0] == printers[1]) == 0)canPrint.wait(priority);
+        if(printers[0] == 1){
+            printers[0] = 0;
+            return 0;
+        }
+        else{
+            printers[1] = 0;
+            return 1;
+        }
+    }
+    void release(int id){
+        printers[id] = 1;
+        if(canPrint.queue()) canPrint.signal();
+    }
+}

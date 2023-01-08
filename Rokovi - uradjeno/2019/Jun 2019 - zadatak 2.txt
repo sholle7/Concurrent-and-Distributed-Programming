@@ -1,0 +1,29 @@
+int balance = 0;
+int needBalance = 0;
+sem mutex = 1, waiting = 0, enter = 1;
+sem mutex();
+void withdraw(int value){
+    wait(enter);
+    wait(mutex);
+    if(balance > value) balance -= value;
+    else {
+        needBalance = value;
+        signal(mutex);
+        wait(waiting);
+        balance -= value;
+        needBalance = 0;
+    }
+    signal(mutex);
+    signal(enter);
+}
+void deposit(int value){
+    wait(mutex);
+    balance+=value;
+    if(needBalance > 0 && needBalance <= balance) signal(waiting);
+    else signal(mutex);
+}
+void check(){
+    wait(mutex);
+    return balance;
+    signal(mutex);
+}

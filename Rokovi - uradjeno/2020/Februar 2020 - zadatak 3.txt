@@ -1,0 +1,49 @@
+
+chan in(int);
+chan out(int);
+
+void sort_process(){
+    int min=none;
+    
+    while(true){
+        int num=in.receive();
+        if(num==EOS){
+            out.send(min);
+            out.send(EOS);
+        }
+        else{
+            if(min!=none){
+                
+                if(num<min){
+                    out.send(min);
+                    min=num;
+                }
+                else{
+                    out.send(num);
+                }
+                
+            }
+            else{
+                min=num;
+            }
+        }
+    }
+}
+
+
+
+void median() {
+	int current = 0;
+
+	while (true) {
+		int num = in.receive();
+		current++;
+		
+		if (current == (n+1)/2) {
+		    out.send(num); // n je neparan broj
+		    out.send(EOS);
+		    break;
+		}
+		
+	}
+}

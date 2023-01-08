@@ -1,0 +1,74 @@
+void Player(int id){
+    
+    int winner;
+    int left=(id+1)%4;
+    int right=id;
+    
+    boolean t;
+    
+    int hand[4];
+    int samenumber;
+    int number;
+    
+    
+    void test(){
+        
+        samenumber=1;
+        number=hand[0];
+        for(int i=1;i<4;i++){
+            if(number==hand[i]) samenumber++;
+        }
+        
+        if(samenumber==4){ // proveri jel kraj
+            out("winner",id); // kazi svima
+            out("end");
+        }
+        
+        if(rdp("end")){
+            break;
+        }
+        
+    }
+    
+    
+    
+    for(int i=0;i<4;i++){ // pokupi karte sa stola 
+            in("table",?hand[i]);
+        }
+        
+    while(1){
+        
+        
+        test();
+        
+        int index=(int)(rand()*4/RAND_MAX);
+        
+        out("cards",left,hand[index]);
+        in("cards",right,?hand[index]);
+        
+        test();
+        
+        
+        
+    }
+    
+    winner=rd("winner",id);
+    
+}
+
+
+void init(){
+    Card card;
+    
+    for(int i=0;i<16;i++){
+        out("table",newCard());   //dodaj kartu na slucajan nacin
+    }
+    
+     for(int i=0;i<8;i++){
+        out("cards", i%4, newCard());   //dodaj kartu na slucajan nacin
+    }
+    for(int i=0;i<4;i++)eval(Player(i));
+}
+
+
+
